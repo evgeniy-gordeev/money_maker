@@ -1,0 +1,21 @@
+time_period: 3
+
+pair : 'BTCUSDC'
+
+order_value_1 : 0.00021 #основной объем btc
+order_value_2 : 0.0002 #резервный объем btc
+
+int_0 : 30
+int_1 : 10
+int_2 : 50
+int_3 : 50
+int_4 : 40
+int_7 : 50
+int_8 : 20
+int_9 : 100
+int_10 : 50
+
+int_trigger1 : 5
+int_trigger2 : 10
+int_trigger3 : 20
+int_trigger4 : 30

@@ -7,8 +7,10 @@ session = HTTP(
     api_secret="N4n1P6PG3E9mwhwysF4fSQPpBR2ZACOkdmA9",
 )
 
-session.cancel_all_orders(
-    category="spot",
-    symbol="BTCUSDC",
-    orderFilter = 'StopOrder'
-    )
+open_orders_ = session.get_executions(category = 'spot',symbol = 'BTCUSDC')['result']['list'][:2]
+
+import pandas as pd
+fr_ = pd.DataFrame.from_records(open_orders_)[['execValue']].astype(float)
+pnl_abs = fr_.loc[0] - fr_.loc[1]
+pnl_abs = round(pnl_abs.values[0], 4)
+print(pnl_abs)

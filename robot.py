@@ -100,8 +100,8 @@ class Robot:
             orderType = "Limit",
             side = 'Sell',
             orderFilter = 'StopOrder',
-            triggerPrice = marketPrice + 20, #form['int_4'] - form['int_trigger3']
-            price = marketPrice + 40, #form['int_4'
+            triggerPrice = marketPrice + 10, #form['int_4'] - form['int_trigger3'] вергуть 20/40
+            price = marketPrice + 20, #form['int_4'
             qty = form['order_value_1'], #продать осн объем btc  
             marketUnit = 'baseCoin' 
             )

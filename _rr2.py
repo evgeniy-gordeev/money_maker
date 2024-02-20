@@ -5,6 +5,7 @@ session = HTTP(
     api_secret="N4n1P6PG3E9mwhwysF4fSQPpBR2ZACOkdmA9",
 )
 from robot import Robot
+import pandas as pd
 r = Robot()
 import time
 
@@ -25,23 +26,33 @@ while True:
     print('Закрыл все позиции')
     time.sleep(5)
 
-    r.create_order_enter_1()
-    print('поставил enter 1 - закупил объем')
-    time.sleep(5)
     r.create_order_9()
     print('поставил enter 9 - закупил резерыв')
+    time.sleep(5)
+    r.create_order_enter_1()
+    print('поставил enter 1 - закупил объем')
     time.sleep(5)
 
     r.create_order_1()
     r.create_order_3()
     r.create_order_4()
-    print('выставил TP/SL')
+    open_orders_ = session.get_open_orders(category = 'spot',symbol = 'BTCUSDC')['result']['list']
+    open_orders_id_ = pd.DataFrame.from_records(open_orders_)['orderId'].to_list()
+    open_orders_id_.reverse()
+    print('выставил orders 1-4: TP/SL')
     time.sleep(5)
 
     print('waiting order execution...')
     l_o_type = None
     while l_o_type != 'Limit':
         l_o_type = session.get_executions(category='spot', symbol = 'BTCUSDC')['result']['list'][0]['orderType']
-
-    print('сработал TP/SL. Завершаю цикл через 5 секунд')
+    
+    l_o_id = session.get_executions(category='spot', symbol = 'BTCUSDC')['result']['list'][0]['orderId']
+    if l_o_id == open_orders_id_[0]:
+        order_that_worked = 'ордер 1 - stop loss'
+    elif l_o_id == open_orders_id_[1]:
+        order_that_worked = 'ордер 3 - stop loss'
+    else:
+        order_that_worked = 'ордер 4 - take profit'    
+    print(f"сработал {order_that_worked}. Завершаю цикл через 5 секунд")
     time.sleep(5)

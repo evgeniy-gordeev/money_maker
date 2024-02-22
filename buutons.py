@@ -1,6 +1,6 @@
 import telebot
 from telebot import types
-from utils import from_timestamp
+from utils import from_timestamp, assign_order_name
 import pandas as pd
 from tabulate import tabulate
 import pandas as pd
@@ -20,7 +20,7 @@ session = HTTP(
 bot = telebot.TeleBot("6928882205:AAFHKZ8QNDUA4v_zw18Xo7VJvHH9VHMNKh0")
 form = yaml.safe_load(open('form.yml', 'r'))
 r = Robot()
-
+chat_id = 1382441870
 is_running = False
 
 # Обработчик команды /start
@@ -29,7 +29,7 @@ def handle_start(message):
     
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
     itembtn_str1 = types.KeyboardButton('Стратегия 1(int_0)')
-    itembtn_str2 = types.KeyboardButton('Стратегия 2(market_buy)')
+    itembtn_str2 = types.KeyboardButton('Стратегия 2(market)')
     itembtn_balance = types.KeyboardButton('Баланс')
     itembtn_intervals = types.KeyboardButton('Интервалы')
     itembtn_orders = types.KeyboardButton('Ордера')
@@ -49,7 +49,6 @@ def handle_start(message):
 
 @bot.message_handler(func=lambda message: message.text == "Стратегия 1(int_0)")
 def handle_strategy_1(message):
-
     global is_running
     if is_running:
         response = f"Стратегия уже выполняется.\n" \
@@ -57,139 +56,113 @@ def handle_strategy_1(message):
         bot.send_message(message.chat.id, response)
     else:
         is_running = True
+        
+        sleep_time = 5
+        
+        #t0 - block0(подготовка)
+        bot.send_message(message.chat.id, '--Подготовка--') 
 
         r.delete_all_orders()
         r.create_order_11()
         r.create_order_9()
         response = f"Закрыл все ордера.\n" \
                    f"Поставил order_11 - продал все btc.\n" \
-                   f"Закупил резерв."
+                   f"Поставил order_9 - закупил резерв.\n" 
+        bot.send_message(message.chat.id, response)   
 
-        lastOrderPrice = r.check_last_order_price()
-        bot.send_message(message.chat.id, f"Метка 1 = {lastOrderPrice}")
-        
+        time.sleep(sleep_time)
+
+        #t1 - block1
+        metka_1 = r.check_last_order_price()
+        bot.send_message(message.chat.id, f"--Нахожусь в Блоке 1. Метка={metka_1}--")
+
         while is_running:
-            #to
-            delta = r.check_market_price() - r.check_last_order_price()
+            metka = None
+            delta = int(r.check_market_price() - r.check_last_order_price())
             if delta > 10:
                 r.create_order_enter_2()
                 r.create_order_1()
                 r.create_order_3() 
-                r.create_order_4()
-                status = 'orders'
-            elif delta <= -10:
-                metka = r.check_market_price()
-                with open('metka.txt', 'w') as file:
-                    file.write(str(metka))
-                status = 'metka'
+                r.create_order_4()                        
+                bot.send_message(message.chat.id, f"delta = {delta} -> выставил enter2 и ордера1-4")
+                break
+            elif delta < -10:
+                metka = r.check_market_price()  
+                bot.send_message(message.chat.id, f" delta = {delta} -> выставил метку")
+                break    
             else:
-                status = 'pass'
-                continue
-            #t1
-            if status == 'orders':
+                bot.send_message(message.chat.id, f"delta = {delta} -> hold")                
+                time.sleep(sleep_time)        
+
+        time.sleep(sleep_time)
+                            
+        #t2 - blocks2/3/4
+        side = None
+        while is_running:
+            if metka is None:
                 side=r.check_last_order_side()
-                if side == 'Buy': #order2
-                    exec('block2')
-                else:
-                    #block3
-                    delta = r.check_market_price() - r.check_last_order_price()
-                    if delta > 15:
+            else:
+                side = 'metka'
+
+            if side == 'Buy':
+                metka_1 = r.check_last_order_price()
+                bot.send_message(message.chat.id, f"--Нахожусь в Блоке 2. Метка={metka_1}--")
+
+                while is_running:
+                    delta = int(r.check_market_price() - r.check_last_order_price())
+                    try:
+                        order_5_is_active = r.check_orders()['name'].str.contains('order5').any()
+                    except Exception:
+                        order_5_is_active = False
+                    if delta < 0:
                         r.delete_all_orders()
+                        r.create_order_10()       
+                        bot.send_message(message.chat.id, f"delta = {delta} -> выставил order10")
+                        break
+                    elif order_5_is_active == False: 
+                        r.delete_all_orders()
+                        r.create_order_5()                         
+                        bot.send_message(message.chat.id, f"delta = {delta} и order5={order_5_is_active} -> выставил order5") 
+                        break
+                    else:
+                        bot.send_message(message.chat.id, f"delta = {delta} и order5={order_5_is_active} -> hold")
+                        time.sleep(sleep_time)
+
+                time.sleep(sleep_time)
+
+            elif side == 'Sell':
+                metka_1 = r.check_last_order_price()
+                bot.send_message(message.chat.id, f"--Нахожусь в Блоке 1. Метка={metka_1}--")
+
+                while is_running:
+                    metka = None
+                    delta = int(r.check_market_price() - r.check_last_order_price())
+                    if delta > 15:
                         r.create_order_8()
                         r.create_order_1()
                         r.create_order_3() 
                         r.create_order_4()
-                    elif delta <= -10:
+                        bot.send_message(message.chat.id, f"delta = {delta} -> выставил order8 и ордера1-4")
+                        break
+                    elif delta < -10:
                         metka = r.check_market_price()
-                        with open('metka.txt', 'w') as file:
-                            file.write(str(metka))                        
+                        bot.send_message(message.chat.id, f" delta = {delta} -> выставил метку")
+                        break
                     else:
-                       #в начало 3ьего
-                       continue 
-            elif status == 'metka':
-                exec('block4')
+                        bot.send_message(message.chat.id, f"delta = {delta} -> hold")
+                        time.sleep(sleep_time)
+
+                time.sleep(sleep_time)
             else:
-                pass
+                bot.send_message(message.chat.id, "--Нахожусь в Блоке 4--")
 
-@bot.message_handler(func=lambda message: message.text == "Стратегия 2(market_buy)")
-def handle_strategy_2(message):
+                bot.send_message(message.chat.id, "блок 4 на стадии разработки...")
+                bot.send_message(message.chat.id, "Конец")
+                is_running=False
+                break
 
-    global is_running
-    if is_running:
-        response = f"Стратегия уже выполняется.\n" \
-                   f"Дождитесь выполнения стратегии."
-        bot.send_message(message.chat.id, response)
-    else:
-        is_running = True
-        i = 0
-        while is_running:
-            i+=1
-            response =  f"Цикл {i}\n" \
-                        f"Бот начинает работу. До старта {5} секунд"
-            bot.send_message(message.chat.id, response)
-            time.sleep(5)
-
-            r.delete_all_orders()
-            response =  f"Удалил ордера" 
-            bot.send_message(message.chat.id, response)        
-            time.sleep(5)
-
-            try:
-                r.create_order_11()
-                response =  f"Поставил order_11 - продал все btc." 
-                bot.send_message(message.chat.id, response)    
-            except InvalidRequestError:
-                response =  f"Не могу закрыть позиции, не хватает баланса. Обратить внимание." 
-                bot.send_message(message.chat.id, response)   
-            time.sleep(5)
-
-            r.create_order_9()
-            response =  f"Поставил enter_9 - закупил резерв" 
-            bot.send_message(message.chat.id, response) 
-            time.sleep(5)
-            
-            r.create_order_enter_1()
-            response =  f"Поставил enter_1 - закупил объем" 
-            bot.send_message(message.chat.id, response) 
-            r.create_order_1()
-            r.create_order_3()
-            r.create_order_4()
-            open_orders_ = session.get_open_orders(category = 'spot', symbol = 'BTCUSDC')['result']['list']
-            open_orders_id_ = pd.DataFrame.from_records(open_orders_)['orderId'].to_list()
-            open_orders_id_.reverse()
-            response =  f"Выставил ордера 1-4: TP/SL" 
-            bot.send_message(message.chat.id, response) 
-            time.sleep(5)
-
-            # response =  f"waiting order execution..."  # - вариант черный ящик
-            # bot.send_message(message.chat.id, response) 
-            l_o_type = None
-            while l_o_type != 'Limit':
-                l_o_type = session.get_executions(category='spot', symbol = 'BTCUSDC')['result']['list'][0]['orderType']
-                marketPrice = float(session.get_tickers(category="spot", symbol="BTCUSDC")['result']['list'][0]['ask1Price'])
-                lastOrderPrice = float(session.get_executions(category='spot', symbol = 'BTCUSDC')['result']['list'][0]['execPrice'])
-                response =  f"delta = {marketPrice-lastOrderPrice}"
-                bot.send_message(message.chat.id, response)  
-
-            l_o_id = session.get_executions(category='spot', symbol = 'BTCUSDC')['result']['list'][0]['orderId']
-            if l_o_id == open_orders_id_[0]:
-                order_that_worked = 'ордер 1 - stop loss'
-            elif l_o_id == open_orders_id_[1]:
-                order_that_worked = 'ордер 3 - stop loss'
-            else:
-                order_that_worked = 'ордер 4 - take profit' 
-            l_2_0 = session.get_executions(category = 'spot',symbol = 'BTCUSDC')['result']['list'][:2]
-            fr_ = pd.DataFrame.from_records(l_2_0)[['execValue']].astype(float)
-            pnl_abs = fr_.loc[0] - fr_.loc[1]
-            pnl_abs = round(pnl_abs.values[0], 4)
-            response =  f"Сработал {order_that_worked}\n" \
-                        f"Реализованная прибыль {pnl_abs} USDC.\n" \
-                        f"Завершаю цикл.\n" \
-                        f"До старта следующего цикла 5 секунд."
-            bot.send_message(message.chat.id, response) 
-            time.sleep(5)
-
-
+                
+        
 @bot.message_handler(func=lambda message: message.text == "Баланс")
 def handle_balance(message):
     token1_balance, token2_balance, total_balance = r.calculate_balance()
@@ -231,12 +204,17 @@ def handle_trades(message):
 
 
 @bot.message_handler(func=lambda message: message.text == "STOP")
-def handle_trades(message):
+def handle_stop(message):
     global is_running
     is_running = False
     r.delete_all_orders()
     try:
-        r.create_order_11()
+        order_value_all = float(session.get_coin_balance(
+            accountType="UNIFIED",
+            coin="BTC",
+        )['result']['balance']['walletBalance'])
+        if order_value_all > 0:
+            r.create_order_11()
         bot.send_message(message.chat.id, "Робот удален. Все позиции закрыты")
     except InvalidRequestError:
         response =  f"Не могу закрыть позиции, не хватает баланса\n."\
@@ -244,8 +222,6 @@ def handle_trades(message):
         bot.send_message(message.chat.id, response)   
 
 # Запуск бота
-# bot.polling()
-
 while True:
     try:
         bot.polling(none_stop=True)

@@ -20,13 +20,10 @@ def write_df_to_excel(df, excel_file):
         df.to_excel(excel_file, index=False)
 
 def calculate_timestamp(start_date_str:str):
-
     # Create a datetime object for February 10, 2024
     start_date = datetime.strptime(start_date_str, "%Y-%m-%d %H:%M:%S")
-
     # Convert datetime object to timestamp
     timestamp = start_date.timestamp()*1000
-
     return timestamp
 
 def from_timestamp(timestamp_ms:str):
@@ -43,18 +40,37 @@ def from_timestamp(timestamp_ms:str):
     return formatted_datetime_str
 
 
-def delete_all_orders():
-
-    open_orders = session.get_open_orders(
-        category="spot", symbol="BTCUSDC"
-        )['result']['list']
-    n_open_orders = len(open_orders)
-
-    session.cancel_all_orders(
-        category="spot",
-        symbol="BTCUSDC",
-        orderFilter = 'StopOrder'
-        )
-    
-    print(f'--deleted {n_open_orders} orders')
-
+def assign_order_name(row):
+    if row['orderType'] == 'Market' and row['side'] == 'Buy':
+        if row['qty'] == 0.00022:
+            return 'order_enter1'
+        elif row['qty'] == 0.00021:
+            return 'order_enter2'
+        elif row['qty'] == 0.0002:
+            return 'order9'
+        elif row['qty'] == 0.00019:
+            return 'order8'          
+        else:
+            return 'man'
+    elif row['orderType'] == 'Limit' and row['side'] == 'Sell':
+        if row['qty'] == 0.00021:
+            return 'order1' 
+        if row['qty'] == 0.00022:
+            return 'order2' 
+        elif row['qty'] == 0.0002:
+            return 'order3'
+        else:
+            return 'order4'
+    elif row['orderType'] == 'Market' and row['side'] == 'Sell':
+        if row['qty'] == 0.00021: 
+            return 'order5'
+        # if row['qty'] == 0.00021: 
+        #     return 'order6'
+        # if row['qty'] == 0.00021: 
+        #     return 'order7'        
+        elif row['qty'] == 0.00022: 
+            return 'order10'
+        elif row['qty'] == 0.0002: 
+            return 'order11'        
+    else:
+        return 'unknown'

@@ -32,16 +32,28 @@ class Robot:
             session.place_order(
                 category = 'spot',
                 symbol = 'BTCUSDC',
+                isLeverage = form['isLeverage'],
                 orderType = "Market",
                 side = 'Sell',
                 qty = order_value_all, #продать current объем btc
                 marketUnit = 'baseCoin' 
                 )
-                   
+    def create_order_9(self):
+        session.place_order( 
+            category = 'spot',
+            symbol = 'BTCUSDC',
+            isLeverage = form['isLeverage'],
+            orderType = "Market",
+            side = 'Buy',
+            qty = form['order_value_2'], # купить резервный объем btc
+            marketUnit = 'baseCoin'
+        )
+
     def create_order_enter_1(self):
         session.place_order( 
             category = 'spot',
             symbol = 'BTCUSDC',
+            isLeverage = form['isLeverage'],
             orderType = "Market",
             side = 'Buy',
             qty = form['order_value_1'], # купить основной объем btc 1
@@ -51,26 +63,29 @@ class Robot:
         session.place_order(
             category = 'spot',
             symbol = 'BTCUSDC',
+            isLeverage = form['isLeverage'],
             orderType = 'Market',
             side = 'Buy',
             qty = form['order_value_1'], # купить основной объем btc 2
             marketUnit = 'baseCoin'
         )
-    def create_order_9(self):
-        session.place_order( 
+    def create_order_8(self):
+        session.place_order(
             category = 'spot',
             symbol = 'BTCUSDC',
-            orderType = "Market",
+            isLeverage = form['isLeverage'],
+            orderType = 'Market',
             side = 'Buy',
-            qty = form['order_value_2'], # купить резервный объем btc
+            qty = form['order_value_1'],
             marketUnit = 'baseCoin'
         )
-
+    
     def create_order_1(self):
         marketPrice = float(session.get_tickers(category="spot", symbol="BTCUSDC")['result']['list'][0]['ask1Price'])
         session.place_order( 
             category = 'spot',
             symbol = 'BTCUSDC',
+            isLeverage = form['isLeverage'],
             orderType = "Limit",
             side = 'Sell',
             orderFilter = 'StopOrder',
@@ -84,6 +99,7 @@ class Robot:
         session.place_order( 
             category = 'spot',
             symbol = 'BTCUSDC',
+            isLeverage = form['isLeverage'],
             orderType = "Limit",
             side = 'Sell',
             orderFilter = 'StopOrder',
@@ -97,6 +113,7 @@ class Robot:
         session.place_order( 
             category = 'spot',
             symbol = 'BTCUSDC',
+            isLeverage = form['isLeverage'],
             orderType = "Limit",
             side = 'Sell',
             orderFilter = 'StopOrder',
@@ -115,10 +132,10 @@ class Robot:
     def check_last_order_price(self):
         last_order_price = float(session.get_executions(category='spot', symbol = 'BTCUSDC')['result']['list'][0]['execPrice'])
         return last_order_price
-    def create_metka(self, lastOrderPrice, int_9):
-        metka = lastOrderPrice - int_9
-        return metka
-     
+    def check_last_order_side(self):
+        last_order_id = session.get_executions(category='spot', symbol = 'BTCUSDC')['result']['list'][0]['Side']
+        return last_order_id
+    
     def check_trades(self):
         trades = session.get_executions(category="spot",)['result']['list']
         trades_table = pd.DataFrame.from_records(trades)

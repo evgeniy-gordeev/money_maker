@@ -176,7 +176,7 @@ class Robot:
     def check_trades(self):
         trades = session.get_executions(category="spot",)['result']['list']
         trades_table = pd.DataFrame.from_records(trades)
-        attr_ = ['orderType', 'side', 'execQty',  'execTime']
+        attr_ = ['orderType', 'side', 'execQty', 'execPrice', 'execTime']
         trades_table = trades_table[attr_]
         trades_table['execQty'] = trades_table['execQty'].astype(float)
         trades_table.rename(columns={'execQty':'qty'}, inplace = True)

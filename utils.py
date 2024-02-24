@@ -8,6 +8,7 @@ session = HTTP(
     api_key="5wH56z5gvRFfoNKVd6",
     api_secret="N4n1P6PG3E9mwhwysF4fSQPpBR2ZACOkdmA9",
 )
+form = yaml.safe_load(open('form.yml', 'r'))
 
 def write_df_to_excel(df, excel_file):
 
@@ -42,35 +43,33 @@ def from_timestamp(timestamp_ms:str):
 
 def assign_order_name(row):
     if row['orderType'] == 'Market' and row['side'] == 'Buy':
-        if row['qty'] == 0.00022:
+        if row['qty'] == form['values']['q_enter1']:
             return 'order_enter1'
-        elif row['qty'] == 0.00021:
+        elif row['qty'] == form['values']['q_enter2']:
             return 'order_enter2'
-        elif row['qty'] == 0.0002:
-            return 'order9'
-        elif row['qty'] == 0.00019:
-            return 'order8'          
+        elif row['qty'] == form['values']['q8']:
+            return 'order8'    
+        elif row['qty'] == form['values']['q9']:
+            return 'order9'      
         else:
             return 'man'
     elif row['orderType'] == 'Limit' and row['side'] == 'Sell':
-        if row['qty'] == 0.00021:
+        if row['qty'] == form['values']['q1']:
             return 'order1' 
-        if row['qty'] == 0.00022:
-            return 'order2' 
-        elif row['qty'] == 0.0002:
+        elif row['qty'] == form['values']['q3']:
             return 'order3'
-        else:
+        elif row['qty'] == form['values']['q4']:
             return 'order4'
+        else:
+            return 'man'
     elif row['orderType'] == 'Market' and row['side'] == 'Sell':
-        if row['qty'] == 0.00021: 
-            return 'order5'
-        # if row['qty'] == 0.00021: 
-        #     return 'order6'
-        # if row['qty'] == 0.00021: 
-        #     return 'order7'        
-        elif row['qty'] == 0.00022: 
+        if row['qty'] == form['values']['q5']: 
+            return 'order5'    
+        elif row['qty'] == form['values']['q10']: 
             return 'order10'
-        elif row['qty'] == 0.0002: 
-            return 'order11'        
+        elif row['qty'] == form['values']['q11']: 
+            return 'order11'    
+        else:
+            return 'man'    
     else:
         return 'unknown'

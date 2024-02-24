@@ -2,8 +2,20 @@ time_period: 3
 pair : 'BTCUSDC'
 isLeverage: 0 # 0 - обычный спот, 1 - маржинальная торговля
 
-order_value_1 : 0.00021 #основной объем btc
-order_value_2 : 0.0002 #резервный объем btc
+values:
+  #market_buy
+  q_enter1 : 0.00024
+  q_enter2 : 0.00023
+  q8 : 0.00022
+  q9 : 0.00020
+  #limit-sell
+  q1: 0.00022
+  q3: 0.00021
+  q4: 0.00020
+  #market_sell
+  q5:  0.00022
+  q10: 0.00021
+  q11: 0.00020
 
 ints:
   int_0 : 30

@@ -57,7 +57,7 @@ def handle_strategy_1(message):
     else:
         is_running = True
         
-        sleep_time = 5
+        sleep_time = 2
         
         #t0 - block0(подготовка)
         bot.send_message(message.chat.id, '--Подготовка--') 
@@ -132,7 +132,7 @@ def handle_strategy_1(message):
 
             elif side == 'Sell':
                 metka_1 = r.check_last_order_price()
-                bot.send_message(message.chat.id, f"--Нахожусь в Блоке 1. Метка={metka_1}--")
+                bot.send_message(message.chat.id, f"--Нахожусь в Блоке 3. Метка={metka_1}--")
 
                 while is_running:
                     metka = None

@@ -38,16 +38,6 @@ class Robot:
                 qty = order_value_all, #продать current объем btc
                 marketUnit = 'baseCoin' 
                 )
-    def create_order_9(self):
-        session.place_order( 
-            category = 'spot',
-            symbol = 'BTCUSDC',
-            isLeverage = form['isLeverage'],
-            orderType = "Market",
-            side = 'Buy',
-            qty = form['order_value_2'], # купить резервный объем btc
-            marketUnit = 'baseCoin'
-        )
 
     def create_order_enter_1(self):
         session.place_order( 
@@ -56,7 +46,7 @@ class Robot:
             isLeverage = form['isLeverage'],
             orderType = "Market",
             side = 'Buy',
-            qty = form['order_value_1'], # купить основной объем btc 1
+            qty = form['values']['q_enter1'], # купить основной объем btc 1
             marketUnit = 'baseCoin'
         )
     def create_order_enter_2(self):
@@ -66,7 +56,7 @@ class Robot:
             isLeverage = form['isLeverage'],
             orderType = 'Market',
             side = 'Buy',
-            qty = form['order_value_1'], # купить основной объем btc 2
+            qty = form['values']['q_enter2'], # купить основной объем btc 2
             marketUnit = 'baseCoin'
         )
     def create_order_8(self):
@@ -76,10 +66,20 @@ class Robot:
             isLeverage = form['isLeverage'],
             orderType = 'Market',
             side = 'Buy',
-            qty = form['order_value_1'],
+            qty = form['values']['q8'],
             marketUnit = 'baseCoin'
         )
-    
+    def create_order_9(self):
+        session.place_order( 
+            category = 'spot',
+            symbol = 'BTCUSDC',
+            isLeverage = form['isLeverage'],
+            orderType = "Market",
+            side = 'Buy',
+            qty = form['values']['q9'], # купить резервный объем btc
+            marketUnit = 'baseCoin'
+        )
+
     def create_order_5(self):
         last_order_price = float(session.get_executions(category='spot', symbol = 'BTCUSDC')['result']['list'][0]['execPrice'])
         session.place_order( 
@@ -90,7 +90,7 @@ class Robot:
             orderType = "Market",
             side = 'Sell',
             triggerPrice = last_order_price,
-            qty = 0.00021, # купить основной объем btc 1
+            qty = form['values']['q5'],
             marketUnit = 'baseCoin'
         )
     def create_order_10(self):
@@ -100,7 +100,7 @@ class Robot:
             isLeverage = form['isLeverage'],
             orderType = "Market",
             side = 'Sell',
-            qty = form['order_value_1'], # купить основной объем btc 1
+            qty = form['values']['q10'],
             marketUnit = 'baseCoin'
         )     
 
@@ -115,7 +115,7 @@ class Robot:
             orderFilter = 'StopOrder',
             triggerPrice = marketPrice - 5,  #int1 - trigger1
             price = marketPrice - 10, #int1
-            qty = form['order_value_1'], #продать осн объем btc 
+            qty = form['values']['q1'],
             marketUnit = 'baseCoin'
             )            
     def create_order_3(self):
@@ -129,7 +129,7 @@ class Robot:
             orderFilter = 'StopOrder',
             triggerPrice = marketPrice - 40,  #int3-trigger2
             price = marketPrice - 50, #int3
-            qty = form['order_value_1'], #продать осн объем btc 
+            qty = form['values']['q3'],
             marketUnit = 'baseCoin'
             )
     def create_order_4(self):
@@ -143,7 +143,7 @@ class Robot:
             orderFilter = 'StopOrder',
             triggerPrice = marketPrice + 10, #form['int_4'] - form['int_trigger3'] вергуть 20/40
             price = marketPrice + 20, #form['int_4'
-            qty = form['order_value_1'], #продать осн объем btc  
+            qty = form['values']['q4'],
             marketUnit = 'baseCoin' 
             )
         

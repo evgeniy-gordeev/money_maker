@@ -195,6 +195,7 @@ def handle_strategy_2(message):
         time.sleep(sleep_time)
 
         #t2 - blocks2,3,4
+        metka = None
         side = None
         decision = None
         while is_running:

@@ -7,7 +7,7 @@ from tabulate import tabulate
 import time
 import yaml
 from robot import Robot
-from utils import from_timestamp
+from utils import from_timestamp, assign_order_name
 
 # Инициализация бота с токеном
 session = HTTP(
@@ -44,8 +44,8 @@ def handle_start(message):
         itembtn_buy_val1, itembtn_sell_val1,
         itembtn_balance, itembtn_intervals, 
         itembtn_orders, itembtn_trades, 
-        itembtn_stop,
-        itembtn_vkl, itembtn_vikl
+        itembtn_vkl, itembtn_vikl,
+        itembtn_stop,        
         )
 
     response =  f"Приветствую Вас!\n" \
@@ -106,14 +106,14 @@ def handle_strategy_1(message):
                 lo_price = r.check_last_order_price()
                 if side == 'Buy':
                     decision = 'блок2'
-                    bot.send_message(message.chat.id, f"last order={side} по {lo_price}-перехожу в {decision}")
+                    bot.send_message(message.chat.id, f"lo={side} по {lo_price}-перехожу в {decision}")
                 else:
                     decision = 'блок3'
-                    bot.send_message(message.chat.id, f"last order={side} по {lo_price}-перехожу в {decision}")
+                    bot.send_message(message.chat.id, f"lo={side} по {lo_price}-перехожу в {decision}")
             else:
                 side = 'metka'
                 decision = 'блок4'
-                bot.send_message(message.chat.id, f"last order={side} по {metka}-перехожу в {decision}")  
+                bot.send_message(message.chat.id, f"lo={side} по {metka}-перехожу в {decision}")  
             
             if side == 'Buy':
                 lo_price = r.check_last_order_price()
@@ -171,7 +171,7 @@ def handle_strategy_1(message):
                 bot.send_message(message.chat.id, f"--Нахожусь в Блоке 4. lo_price={lo_price}--")
                 while is_running:
                     delta = int(r.check_market_price() - r.check_last_order_price())
-                    if delta > 50: #int7
+                    if delta > 20: #int7
                         r.delete_all_orders()
                         r.create_order_7()
                         r.create_order_1()
@@ -183,7 +183,7 @@ def handle_strategy_1(message):
                                                 f"delta={delta} -> Выполнил order7 пок; Выставил ордера1-4\n"\
                                                 f"Обнулил значение метки")                        
                         break
-                    elif delta < -50: #int10
+                    elif delta < -20: #int10
                         metka = r.check_market_price()
                         bot.send_message(message.chat.id, f"delta={delta} -> Выставил метку по цене {metka}")
                         break
@@ -235,14 +235,14 @@ def handle_strategy_2(message):
                 lo_price = r.check_last_order_price()
                 if side == 'Buy':
                     decision = 'блок2'
-                    bot.send_message(message.chat.id, f"last order={side} по {lo_price}-перехожу в {decision}")
+                    bot.send_message(message.chat.id, f"lo={side} по {lo_price}-перехожу в {decision}")
                 else:
                     decision = 'блок3'
-                    bot.send_message(message.chat.id, f"last order={side} по {lo_price}-перехожу в {decision}")
+                    bot.send_message(message.chat.id, f"lo={side} по {lo_price}-перехожу в {decision}")
             else:
                 side = 'metka'
                 decision = 'блок4'
-                bot.send_message(message.chat.id, f"last order={side} по {metka}-перехожу в {decision}")  
+                bot.send_message(message.chat.id, f"lo={side} по {metka}-перехожу в {decision}")  
 
             if side == 'Buy':
                 lo_price = r.check_last_order_price()
@@ -368,8 +368,11 @@ def handle_orders(message):
         bbt_request = session.get_open_orders(category='spot', symbol='BTCUSDC')
         open_orders = bbt_request['result']['list']
         if len(open_orders) > 0:
-            fr_ =  pd.DataFrame.from_records(open_orders)[['symbol','orderType', 'side', 'qty', 'triggerPrice', 'price', 'createdTime']]
+            attribs_ = ['orderType', 'side', 'qty', 'triggerPrice', 'price', 'createdTime']
+            fr_ =  pd.DataFrame.from_records(open_orders)[attribs_]
             fr_['createdTime'] = pd.to_datetime(fr_['createdTime'].apply(lambda x: from_timestamp(x)))
+            fr_['createdTime'] = fr_['createdTime'].dt.time
+            fr_['name'] = fr_.apply(assign_order_name, axis =1)
             fr_ = fr_.head(7)
             response = tabulate(fr_, headers='keys', tablefmt='pretty')
             bot.send_message(message.chat.id, response)
@@ -387,6 +390,24 @@ def handle_trades(message):
     bot.send_message(message.chat.id, response)
 
 
+@bot.message_handler(func=lambda message: message.text == "ВКЛ СЧЕТЧИК")
+def handle_vkl(message):
+    global is_running
+    if is_running:
+        bot.send_message(message.chat.id, "Счетчик уже включен")
+    else:
+        is_running = True
+        bot.send_message(message.chat.id, "Включил счетчик")
+
+@bot.message_handler(func=lambda message: message.text == "ВЫКЛ СЧЕТЧИК")
+def handle_vikl(message):
+    global is_running
+    if is_running==False:
+        bot.send_message(message.chat.id, "Счетчик уже выключен")
+    else:
+        is_running = False
+        bot.send_message(message.chat.id, "Выключил счетчик")
+
 
 @bot.message_handler(func=lambda message: message.text == "STOP")
 def handle_stop(message):
@@ -402,25 +423,13 @@ def handle_stop(message):
             r.create_order_11()
 
         token1_balance, token2_balance, total_balance = r.calculate_balance()
-        bot.send_message(message.chat.id, f"--Робот удален. Все btc проданы. Общий баланс: {total_balance:.7f} USDC--")
+        bot.send_message(message.chat.id, 
+                         text = f"--Робот удален. Все btc проданы.--\n"\
+                                f"--Общий баланс: {total_balance:.7f} USDC--")
     except InvalidRequestError:
         response =  f"Не могу продать btc, не хватает баланса\n."\
                     f"Обратить внимание." 
         bot.send_message(message.chat.id, response)   
-
-
-
-@bot.message_handler(func=lambda message: message.text == "ВКЛ СЧЕТЧИК")
-def handle_vkl(message):
-    global is_running
-    is_running = True
-
-@bot.message_handler(func=lambda message: message.text == "ВЫКЛ СЧЕТЧИК")
-def handle_vikl(message):
-    global is_running
-    is_running = False
-
-
 
 # Запуск бота
 while True:

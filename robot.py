@@ -28,7 +28,7 @@ class Robot:
                 accountType="UNIFIED",
                 coin="BTC",
                 )['result']['balance']['walletBalance'])
-        if order_value_all > 0:  #непустой объем
+        if order_value_all >= 0.00020:  #непустой объем - больше минимального на продажу
             session.place_order(
                 category = 'spot',
                 symbol = 'BTCUSDC',

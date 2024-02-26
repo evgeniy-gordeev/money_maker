@@ -4,9 +4,10 @@ isLeverage: 0 # 0 - обычный спот, 1 - маржинальная тор
 
 values:
   #market_buy
-  q_enter1 : 0.00024
-  q_enter2 : 0.00023
-  q8 : 0.00022
+  q_enter1 : 0.00025
+  q_enter2 : 0.00024
+  q8 : 0.00023
+  q7 : 0.00022
   q9 : 0.00020
   #limit-sell
   q1: 0.00022

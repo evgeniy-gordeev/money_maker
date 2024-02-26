@@ -69,6 +69,16 @@ class Robot:
             qty = form['values']['q8'],
             marketUnit = 'baseCoin'
         )
+    def create_order_7(self):
+        session.place_order(
+            category = 'spot',
+            symbol = 'BTCUSDC',
+            isLeverage = form['isLeverage'],
+            orderType = 'Market',
+            side = 'Buy',
+            qty = form['values']['q7'],
+            marketUnit = 'baseCoin'
+        )
     def create_order_9(self):
         session.place_order( 
             category = 'spot',

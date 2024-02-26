@@ -20,19 +20,39 @@ class Robot:
             orderFilter = 'StopOrder'
             )
     def create_order_11(self):
-        order_value_all = float(session.get_coin_balance(accountType="UNIFIED", coin="BTC")['result']['balance']['walletBalance'])
-        if order_value_all >= form['min_value']:
+        btc_amnt = float(session.get_coin_balance(accountType="UNIFIED", coin="BTC")['result']['balance']['walletBalance'])
+        if btc_amnt >= form['min_value']:
             session.place_order(
                 category = 'spot',
                 symbol=form['symbol'],
                 isLeverage = form['isLeverage'],
                 orderType = "Market",
                 side = 'Sell',
-                qty = order_value_all, #продать current объем btc
+                qty = btc_amnt, #продать current объем btc
                 marketUnit = 'baseCoin' 
                 )
         else:
-            pass
+            usdc_amnt = float(session.get_coin_balance(accountType="UNIFIED",coin="USDC",)['result']['balance']['walletBalance'])
+            session.place_order(
+                category = 'spot',
+                symbol=form['symbol'],
+                isLeverage = form['isLeverage'],
+                orderType = "Market",
+                side = 'Buy',
+                qty = usdc_amnt, 
+                marketUnit = 'quoteCoin' 
+                )
+            btc_amnt = float(session.get_coin_balance(accountType="UNIFIED", coin="BTC")['result']['balance']['walletBalance'])
+            session.place_order(
+                category = 'spot',
+                symbol=form['symbol'],
+                isLeverage = form['isLeverage'],
+                orderType = "Market",
+                side = 'Sell',
+                qty = btc_amnt, #продать current объем btc
+                marketUnit = 'baseCoin' 
+                )
+            
 
     def create_order_enter_1(self):
         session.place_order( 

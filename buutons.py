@@ -380,19 +380,29 @@ def handle_sell_value_1(message):
 
 @bot.message_handler(func=lambda message: message.text == "Баланс")
 def handle_balance(message):
-    token1_balance, token2_balance, total_balance = r.calculate_balance()
-    response = f"Ваш текущий баланс:\n" \
-               f"USDC: {token1_balance:.5f}\n" \
-               f"BTC: {token2_balance:.8f}\n" \
-               f"Общий баланс: {total_balance:.7f} USDC"
-    bot.send_message(message.chat.id, response)
-
+    try:
+        token1_balance, token2_balance, total_balance = r.calculate_balance()
+        response = f"Ваш текущий баланс:\n" \
+                f"USDC: {token1_balance:.5f}\n" \
+                f"BTC: {token2_balance:.8f}\n" \
+                f"Общий баланс: {total_balance:.7f} USDC"
+        bot.send_message(message.chat.id, response)
+    except:
+        bot.send_message(message.chat.id, "Баланс не может быть посчитан")
+        
 @bot.message_handler(func=lambda message: message.text == "Интервалы")
 def handle_ints(message):
-    response = f"Интервалы: \n {form['ints']}"
-    bot.send_message(message.chat.id, response)
-    response = f"Триггеры: \n {form['int_triggers']}"
-    bot.send_message(message.chat.id, response)
+    try:
+        response = f"Интервалы: \n {form['ints']}"
+        bot.send_message(message.chat.id, response)
+    except Exception:
+        bot.send_message(message.chat.id, "Не заданы интревалы")
+
+    try:
+        response = f"Триггеры: \n {form['int_triggers']}"
+        bot.send_message(message.chat.id, response)
+    except Exception:
+        bot.send_message(message.chat.id, "Не заданы триггерные интревалы")
 
 @bot.message_handler(func=lambda message: message.text == "Текущие Ордера")
 def handle_orders(message):

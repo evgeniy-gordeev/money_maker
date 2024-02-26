@@ -204,7 +204,7 @@ def handle_strategy_1(message):
                 time.sleep(sleep_time)
 
 @bot.message_handler(func=lambda message: message.text == "Стратегия 2(market)")
-def handle_strategy_2(message):ы
+def handle_strategy_2(message):
     #обработка двойного нажатия кнопки
     global is_running
     if is_running:

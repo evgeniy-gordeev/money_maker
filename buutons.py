@@ -77,7 +77,7 @@ def handle_strategy_1(message):
 
         #t1 - block1
         lo_price = r.check_last_order_price()
-        bot.send_message(message.chat.id, f"--Нахожусь в Блоке 1. lo_price={lo_price}--")
+        bot.send_message(message.chat.id, f"--Нахожусь в Блоке 1.LO_price={lo_price}--")
         while is_running:
             metka = None
             delta = int(r.check_market_price() - r.check_last_order_price())
@@ -86,14 +86,16 @@ def handle_strategy_1(message):
                 r.create_order_1()
                 r.create_order_3() 
                 r.create_order_4()                        
-                bot.send_message(message.chat.id, f"delta = {delta} -> Выполнил enter2 пок; Выставил ордера1-4")
+                bot.send_message(message.chat.id, f"delta={delta} ---> \n"\
+                                                  f"Выполнил enter2 пок; Выставил ордера1-4")
                 break
             elif delta < -form['ints']['int_9']:
                 metka = r.check_market_price()  
-                bot.send_message(message.chat.id, f" delta={delta} -> Выставил метку по цене {metka}")
+                bot.send_message(message.chat.id, f"delta={delta} ----> \n"\
+                                                  f"Выставил метку по цене {metka}")
                 break    
             else:
-                bot.send_message(message.chat.id, f"delta={delta} -> hold")                
+                bot.send_message(message.chat.id, f"delta={delta} ---> hold")                
                 time.sleep(sleep_time)        
         time.sleep(sleep_time)
                             
@@ -105,19 +107,22 @@ def handle_strategy_1(message):
                 side=r.check_last_order_side()
                 lo_price = r.check_last_order_price()
                 if side == 'Buy':
-                    decision = 'блок2'
-                    bot.send_message(message.chat.id, f"lo={side} по {lo_price}-перехожу в {decision}")
+                    decision = 'Блок2'
+                    bot.send_message(message.chat.id, f"Last Order={side} по {lo_price} --->\n"\
+                                                      f"Перехожу в {decision}")
                 else:
-                    decision = 'блок3'
-                    bot.send_message(message.chat.id, f"lo={side} по {lo_price}-перехожу в {decision}")
+                    decision = 'Блок3'
+                    bot.send_message(message.chat.id, f"Last Order={side} по {lo_price} --->\n"\
+                                                      f"Перехожу в {decision}")
             else:
                 side = 'metka'
-                decision = 'блок4'
-                bot.send_message(message.chat.id, f"lo={side} по {metka}-перехожу в {decision}")  
+                decision = 'Блок4'
+                bot.send_message(message.chat.id, f"Last Order={side} по {metka} --->\n"\
+                                                  f"Перехожу в {decision}") 
             
             if side == 'Buy':
                 lo_price = r.check_last_order_price()
-                bot.send_message(message.chat.id, f"--Нахожусь в Блоке 2. lo_price={lo_price}--")
+                bot.send_message(message.chat.id, f"--Нахожусь в Блоке 2.LO_price={lo_price}--")
                 while is_running:
                     delta = int(r.check_market_price() - r.check_last_order_price())
                     try:
@@ -128,22 +133,24 @@ def handle_strategy_1(message):
                         r.delete_all_orders()
                         r.create_order_10()       
                         bot.send_message(message.chat.id,
-                                         text = f"Закрыл все ордера - delete open orders\n"\
-                                                f"delta={delta} -> Выполнил order10 прод.") 
+                                         text = f"Закрыл все ордера - delete open orders.\n"\
+                                                f"delta={delta} --->\n"\
+                                                f"Выполнил order10 прод.") 
                         break
                     elif order_5_is_active == False: 
                         # r.delete_all_orders() - александр попросил закомментить
                         r.create_order_5()                         
-                        bot.send_message(message.chat.id, f"delta={delta} и order5={order_5_is_active} -> Выставил order5 прод.") 
+                        bot.send_message(message.chat.id, f"delta={delta} и order5={order_5_is_active} --->\n"\
+                                                          f"Выставил order5 прод.") 
                         break
                     else:
-                        bot.send_message(message.chat.id, f"delta={delta} и order5={order_5_is_active} -> hold")
+                        bot.send_message(message.chat.id, f"delta={delta} и order5={order_5_is_active} ---> hold")
                         time.sleep(sleep_time)
                 time.sleep(sleep_time)
 
             elif side == 'Sell':
                 lo_price = r.check_last_order_price()
-                bot.send_message(message.chat.id, f"--Нахожусь в Блоке 3. lo_price={lo_price}--")
+                bot.send_message(message.chat.id, f"--Нахожусь в Блоке 3.LO_price={lo_price}--")
                 while is_running:
                     metka = None
                     delta = int(r.check_market_price() - r.check_last_order_price())
@@ -155,20 +162,22 @@ def handle_strategy_1(message):
                         r.create_order_4()
                         bot.send_message(message.chat.id,
                                          text = f"Закрыл все ордера - delete open orders\n"\
-                                                f"delta={delta} -> Выполнил order8 пок; Выставил ордера1-4\n") 
+                                                f"delta={delta} --->\n"\
+                                                f"Выполнил order8 пок; Выставил ордера1-4\n") 
                         break
                     elif delta < -form['ints']['int_9']:
                         metka = r.check_market_price()
-                        bot.send_message(message.chat.id, f" delta={delta} -> Выставил метку по цене {metka}")
+                        bot.send_message(message.chat.id, f"delta={delta} --->\n"\
+                                                          f"Выставил метку по цене {metka}")
                         break
                     else:
-                        bot.send_message(message.chat.id, f"delta={delta} -> hold")
+                        bot.send_message(message.chat.id, f"delta={delta} ---> hold")
                         time.sleep(sleep_time)
                 time.sleep(sleep_time)
 
             else:
                 lo_price = r.check_last_order_price()
-                bot.send_message(message.chat.id, f"--Нахожусь в Блоке 4. lo_price={lo_price}--")
+                bot.send_message(message.chat.id, f"--Нахожусь в Блоке 4.LO_price={lo_price}--")
                 while is_running:
                     delta = int(r.check_market_price() - r.check_last_order_price())
                     if delta > form['ints']['int_7']:
@@ -186,15 +195,16 @@ def handle_strategy_1(message):
                         break
                     elif delta < -form['ints']['int_10']:
                         metka = r.check_market_price()
-                        bot.send_message(message.chat.id, f"delta={delta} -> Выставил метку по цене {metka}")
+                        bot.send_message(message.chat.id, f"delta={delta} --->\n"\
+                                                          f"Выставил метку по цене {metka}")
                         break
                     else:
-                        bot.send_message(message.chat.id, f"delta={delta} -> hold")
+                        bot.send_message(message.chat.id, f"delta={delta} ---> hold")
                         time.sleep(sleep_time)
                 time.sleep(sleep_time)
 
 @bot.message_handler(func=lambda message: message.text == "Стратегия 2(market)")
-def handle_strategy_2(message):
+def handle_strategy_2(message):ы
     #обработка двойного нажатия кнопки
     global is_running
     if is_running:
@@ -217,7 +227,7 @@ def handle_strategy_2(message):
         
         #t1 - block1
         lo_price = r.check_last_order_price()
-        bot.send_message(message.chat.id, f"--Нахожусь в Блоке 1. lo_price={lo_price}--")
+        bot.send_message(message.chat.id, f"--Нахожусь в Блоке 1.LO_price={lo_price}--")
         r.create_order_enter_1()
         r.create_order_1()
         r.create_order_3()
@@ -234,19 +244,22 @@ def handle_strategy_2(message):
                 side=r.check_last_order_side()
                 lo_price = r.check_last_order_price()
                 if side == 'Buy':
-                    decision = 'блок2'
-                    bot.send_message(message.chat.id, f"lo={side} по {lo_price}-перехожу в {decision}")
+                    decision = 'Блок2'
+                    bot.send_message(message.chat.id, f"Last Order={side} по {lo_price} --->\n"\
+                                                      f"Перехожу в {decision}")
                 else:
-                    decision = 'блок3'
-                    bot.send_message(message.chat.id, f"lo={side} по {lo_price}-перехожу в {decision}")
+                    decision = 'Блок3'
+                    bot.send_message(message.chat.id, f"Last Order={side} по {lo_price} --->\n"\
+                                                      f"Перехожу в {decision}")
             else:
                 side = 'metka'
-                decision = 'блок4'
-                bot.send_message(message.chat.id, f"lo={side} по {metka}-перехожу в {decision}")  
+                decision = 'Блок4'
+                bot.send_message(message.chat.id, f"Last Order={side} по {metka} --->\n"\
+                                                  f"Перехожу в {decision}") 
 
             if side == 'Buy':
                 lo_price = r.check_last_order_price()
-                bot.send_message(message.chat.id, f"--Нахожусь в Блоке 2. lo_price={lo_price}--")
+                bot.send_message(message.chat.id, f"--Нахожусь в Блоке 2.LO_price={lo_price}--")
                 while is_running:
                     delta = int(r.check_market_price() - r.check_last_order_price())
                     try:
@@ -257,22 +270,24 @@ def handle_strategy_2(message):
                         r.delete_all_orders()
                         r.create_order_10()       
                         bot.send_message(message.chat.id,
-                                         text = f"Закрыл все ордера - delete open orders\n"\
-                                                f"delta={delta} -> Выполнил order10 прод.") 
+                                         text = f"Закрыл все ордера - delete open orders.\n"\
+                                                f"delta={delta} --->\n"\
+                                                f"Выполнил order10 прод.") 
                         break
                     elif order_5_is_active == False: 
                         # r.delete_all_orders() - александр попросил закомментить
                         r.create_order_5()                         
-                        bot.send_message(message.chat.id, f"delta={delta} и order5={order_5_is_active} -> Выставил order5 прод.") 
+                        bot.send_message(message.chat.id, f"delta={delta} и order5={order_5_is_active} --->\n"\
+                                                          f"Выставил order5 прод.") 
                         break
                     else:
-                        bot.send_message(message.chat.id, f"delta={delta} и order5={order_5_is_active} -> hold")
+                        bot.send_message(message.chat.id, f"delta={delta} и order5={order_5_is_active} ---> hold")
                         time.sleep(sleep_time)
                 time.sleep(sleep_time)
 
             elif side == 'Sell':
                 lo_price = r.check_last_order_price()
-                bot.send_message(message.chat.id, f"--Нахожусь в Блоке 3. lo_price={lo_price}--")
+                bot.send_message(message.chat.id, f"--Нахожусь в Блоке 3.LO_price={lo_price}--")
                 while is_running:
                     metka = None
                     delta = int(r.check_market_price() - r.check_last_order_price())
@@ -284,20 +299,22 @@ def handle_strategy_2(message):
                         r.create_order_4()
                         bot.send_message(message.chat.id,
                                          text = f"Закрыл все ордера - delete open orders\n"\
-                                                f"delta={delta} -> Выполнил order8 пок; Выставил ордера1-4\n") 
+                                                f"delta={delta} --->\n"\
+                                                f"Выполнил order8 пок; Выставил ордера1-4\n") 
                         break
                     elif delta < -form['ints']['int_9']:
                         metka = r.check_market_price()
-                        bot.send_message(message.chat.id, f" delta={delta} -> Выставил метку по цене {metka}")
+                        bot.send_message(message.chat.id, f"delta={delta} --->\n"\
+                                                          f"Выставил метку по цене {metka}")
                         break
                     else:
-                        bot.send_message(message.chat.id, f"delta={delta} -> hold")
+                        bot.send_message(message.chat.id, f"delta={delta} ---> hold")
                         time.sleep(sleep_time)
                 time.sleep(sleep_time)
 
             else:
                 lo_price = r.check_last_order_price()
-                bot.send_message(message.chat.id, f"--Нахожусь в Блоке 4. lo_price={lo_price}--")
+                bot.send_message(message.chat.id, f"--Нахожусь в Блоке 4.LO_price={lo_price}--")
                 while is_running:
                     delta = int(r.check_market_price() - r.check_last_order_price())
                     if delta > form['ints']['int_7']:
@@ -315,10 +332,11 @@ def handle_strategy_2(message):
                         break
                     elif delta < -form['ints']['int_10']:
                         metka = r.check_market_price()
-                        bot.send_message(message.chat.id, f"delta={delta} -> Выставил метку по цене {metka}")
+                        bot.send_message(message.chat.id, f"delta={delta} --->\n"\
+                                                          f"Выставил метку по цене {metka}")
                         break
                     else:
-                        bot.send_message(message.chat.id, f"delta={delta} -> hold")
+                        bot.send_message(message.chat.id, f"delta={delta} ---> hold")
                         time.sleep(sleep_time)
                 time.sleep(sleep_time)
 

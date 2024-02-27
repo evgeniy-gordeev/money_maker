@@ -11,11 +11,10 @@ from robot import Robot
 
 # Конфиги
 form = yaml.safe_load(open('form.yml', 'r'))
-keys = yaml.safe_load(open('keys.yml', 'r'))
 
 # Инициализация бота с токеном
-session = HTTP(testnet=False, api_key=keys['bybit']['api_key'], api_secret=keys['bybit']['api_secret'])
-bot = telebot.TeleBot(token=keys['tg']['bot_token'])
+session = HTTP(testnet=False, api_key=form['bybit']['api_key'], api_secret=form['bybit']['api_secret'])
+bot = telebot.TeleBot(token=form['tg']['bot_token'])
 r = Robot()
 
 # Константы
@@ -26,7 +25,35 @@ is_running = False
 # Обработчики
 @bot.message_handler(commands=['start'])
 def handle_start(message):
+    bot.send_message(message.chat.id, text = f"Приветствую Вас!\n"\
+                                             f"В меню слева доступны команды\n"\
+                                             f'"Смена Формы" и "Запуск Стратегии"')
+
+
+
+@bot.message_handler(commands=['chg_form'])
+def form_chg(message):
+    bot.send_message(message.chat.id, 
+                     text = f"Пожалуйста, подгрузите форму в формате form.yml\n"
+                            f"По умолчанию используется форма разработчика.\n"
+                            f"Пропустите шаг, если изменения не требуются.")
+
+@bot.message_handler(content_types=['document'])
+def proc_document(message):
+    document = message.document
+    file_info = bot.get_file(document.file_id)
+    downloaded_file = bot.download_file(file_info.file_path)
     
+    filepath = 'form.yml'
+    with open(filepath, 'wb') as new_file:
+        new_file.write(downloaded_file)
+    bot.send_message(message.chat.id, 'Форма успешно загружена.\n'\
+                                      'Бот перезапущен с новыми параметрами.')
+
+
+
+@bot.message_handler(commands=['strategy'])
+def handle_strat(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
     itembtn_str1 = types.KeyboardButton('Стратегия 1(int_0)')
     itembtn_str2 = types.KeyboardButton('Стратегия 2(market)')
@@ -47,10 +74,7 @@ def handle_start(message):
         itembtn_vkl, itembtn_vikl,
         itembtn_stop,        
         )
-
-    response =  f"Приветствую Вас!\n" \
-                f"Пожалуйста, выберите статегию." 
-    bot.send_message(message.chat.id, response, reply_markup=markup)
+    bot.send_message(message.chat.id, text = "Пожалуйста, выберите статегию.", reply_markup=markup)
 
 
 @bot.message_handler(func=lambda message: message.text == "Стратегия 1(int_0)")
@@ -465,7 +489,7 @@ def handle_stop(message):
 # Запуск бота
 while True:
     try:
-        bot.polling(none_stop=True)
+        bot.polling(none_stop=True, restart_on_change=True, path_to_watch = 'form.yml')
     except Exception as e:
         print(e)
         time.sleep(15)

@@ -2,9 +2,8 @@ import yaml
 from pybit.unified_trading import HTTP
 from datetime import datetime
 
-keys = yaml.safe_load(open('keys.yml', 'r'))           
 form = yaml.safe_load(open('form.yml', 'r'))
-session = HTTP(testnet=False, api_key=keys['bybit']['api_key'], api_secret=keys['bybit']['api_secret'])
+session = HTTP(testnet=False, api_key=form['bybit']['api_key'], api_secret=form['bybit']['api_secret'])
 
 
 def calculate_timestamp(start_date_str:str):

@@ -35,3 +35,9 @@ int_triggers:
   int_trigger2: 10
   int_trigger3: 20
   int_trigger4: 30
+
+bybit:
+  api_key: "5wH56z5gvRFfoNKVd6"
+  api_secret: "N4n1P6PG3E9mwhwysF4fSQPpBR2ZACOkdmA9"
+tg:
+  bot_token: "6928882205:AAFHKZ8QNDUA4v_zw18Xo7VJvHH9VHMNKh0"

@@ -7,7 +7,7 @@ int_triggers:
   int_trigger3: 20
   int_trigger4: 30
 ints:
-  int_0: 20
+  int_0: 12
   int_1: 10
   int_10: 30
   int_2: 30
@@ -19,9 +19,9 @@ ints:
 isLeverage: 0
 min_value: 0.0002
 symbol: BTCUSDC
-time_period: 3
 tg:
   bot_token: 6928882205:AAFHKZ8QNDUA4v_zw18Xo7VJvHH9VHMNKh0
+time_period: 3
 values:
   q1: 0.00022
   q10: 0.00021

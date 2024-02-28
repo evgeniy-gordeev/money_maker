@@ -56,8 +56,11 @@ def proc_document(message):
                     attribs_ = ['time_period', 'symbol', 'isLeverage', 'min_value', 'values', 'ints', 'int_triggers', 'bybit', 'tg']
                     sorted_attribs = sorted(attribs_)
                     if sorted_inputed_attribs_ == sorted_attribs:
+                        import datetime
                         with open('form.yml', 'w') as file:
                             yaml.dump(yaml_data, file)
+                        with open('restart.txt','w') as file:
+                            file.write(f'форма изменена_{datetime.datetime.now()}')
                         bot.send_message(message.chat.id,   'Форма успешно загружена.\n'\
                                                             'Бот перезапущен с новыми параметрами.')
                     else:
@@ -517,7 +520,7 @@ def handle_stop(message):
 # Запуск бота
 while True:
     try:
-        bot.polling(none_stop=True)
+        bot.polling(none_stop=True, restart_on_change=True, path_to_watch='restart.txt')
     except Exception as e:
         print(e)
         time.sleep(15)

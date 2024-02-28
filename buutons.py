@@ -517,7 +517,7 @@ def handle_stop(message):
 # Запуск бота
 while True:
     try:
-        bot.polling(none_stop=True, restart_on_change=True, path_to_watch = 'form.yml')
+        bot.polling(none_stop=True)
     except Exception as e:
         print(e)
         time.sleep(15)

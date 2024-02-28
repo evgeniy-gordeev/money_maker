@@ -36,20 +36,48 @@ def form_chg(message):
     bot.send_message(message.chat.id, 
                      text = f"Пожалуйста, подгрузите форму в формате form.yml\n"
                             f"По умолчанию используется форма разработчика.\n"
-                            f"Пропустите шаг, если изменения не требуются.")
+                            f"Пропустите шаг, если изменения не требуются."
+                            f"Не нужно писать комментарии к форме.")
 
 @bot.message_handler(content_types=['document'])
 def proc_document(message):
-    document = message.document
-    file_info = bot.get_file(document.file_id)
-    downloaded_file = bot.download_file(file_info.file_path)
-    
-    filepath = 'form.yml'
-    with open(filepath, 'wb') as new_file:
-        new_file.write(downloaded_file)
-    bot.send_message(message.chat.id, 'Форма успешно загружена.\n'\
-                                      'Бот перезапущен с новыми параметрами.')
+    try:
+        document_id = message.document.file_id
+        document_path = bot.get_file(document_id).file_path
+        document_name = message.document.file_name
+        if document_name == 'form.yml':
+            document_content = bot.download_file(document_path)
+            document_content_decoded = document_content.decode('unicode_escape')
+            if len(document_content_decoded) > 0:            
+                yaml_data = yaml.safe_load(document_content_decoded)
+                if isinstance(yaml_data, dict):
+                    inputed_attribs_ = list(yaml_data.keys())
+                    sorted_inputed_attribs_ = sorted(inputed_attribs_)
+                    attribs_ = ['time_period', 'symbol', 'isLeverage', 'min_value', 'values', 'ints', 'int_triggers', 'bybit', 'tg']
+                    sorted_attribs = sorted(attribs_)
+                    if sorted_inputed_attribs_ == sorted_attribs:
+                        with open('form.yml', 'w') as file:
+                            yaml.dump(yaml_data, file)
+                        bot.send_message(message.chat.id,   'Форма успешно загружена.\n'\
+                                                            'Бот перезапущен с новыми параметрами.')
+                    else:
+                        bot.send_message(message.chat.id,   'Ошибка.\n'\
+                                                            'Неверный состав атрибутов.')                    
+                else:
+                    bot.send_message(message.chat.id,   'Ошибка.\n'\
+                                                        'Отсутствуют атрибуты.') 
 
+            else:
+                bot.send_message(message.chat.id,   'Ошибка.\n'\
+                                                    'Пустой документ.')
+        else:
+            bot.send_message(message.chat.id,   'Ошибка.\n'\
+                                                'Некорректное название и расширение файла.\n'
+                                                'Загрузите файл "form.yml"')
+    except Exception:
+            bot.send_message(message.chat.id,   'Ошибка.\n'\
+                                                'Комментарии на русском после # в форме\n'
+                                                'Уберите русский яз. и символ # из формы')
 
 
 @bot.message_handler(commands=['strategy'])

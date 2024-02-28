@@ -1,43 +1,36 @@
-time_period: 3 #счетчик
-symbol: "BTCUSDC" #торговая пара
-isLeverage: 0 #0-обычный спот,1-маржинальная торговля
-min_value: 0.00020  #непустой объем - больше минимального на продажу
-
-values:
-  #market_buy
-  q_enter1: 0.00025
-  q_enter2: 0.00024
-  q8: 0.00023
-  q7: 0.00022
-  q9: 0.00020
-  #limit-sell
-  q1: 0.00022
-  q3: 0.00021
-  q4: 0.00020
-  #market_sell
-  q5:  0.00022
-  q10: 0.00021
-  q11: 0.00020
-
-ints:
-  int_0: 10
-  int_1: 10
-  int_2: 50
-  int_3: 50
-  int_4: 40
-  int_7: 20
-  int_8: 15
-  int_9: 10
-  int_10: 20
-
+bybit:
+  api_key: 5wH56z5gvRFfoNKVd6
+  api_secret: N4n1P6PG3E9mwhwysF4fSQPpBR2ZACOkdmA9
 int_triggers:
   int_trigger1: 5
   int_trigger2: 10
   int_trigger3: 20
   int_trigger4: 30
-
-bybit:
-  api_key: "5wH56z5gvRFfoNKVd6"
-  api_secret: "N4n1P6PG3E9mwhwysF4fSQPpBR2ZACOkdmA9"
+ints:
+  int_0: 20
+  int_1: 10
+  int_10: 30
+  int_2: 30
+  int_3: 30
+  int_4: 40
+  int_7: 20
+  int_8: 10
+  int_9: 50
+isLeverage: 0
+min_value: 0.0002
+symbol: BTCUSDC
 tg:
-  bot_token: "6928882205:AAFHKZ8QNDUA4v_zw18Xo7VJvHH9VHMNKh0"
+  bot_token: 6928882205:AAFHKZ8QNDUA4v_zw18Xo7VJvHH9VHMNKh0
+time_period: 3
+values:
+  q1: 0.00022
+  q10: 0.00021
+  q11: 0.0002
+  q3: 0.00021
+  q4: 0.0002
+  q5: 0.00022
+  q7: 0.00022
+  q8: 0.00023
+  q9: 0.0002
+  q_enter1: 0.00025
+  q_enter2: 0.00024

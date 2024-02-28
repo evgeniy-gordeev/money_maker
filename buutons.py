@@ -236,11 +236,10 @@ def handle_strategy_1(message):
                 time.sleep(sleep_time)
 
             else:
-                lo_price = r.check_last_order_price()
                 bot.send_message(message.chat.id, f"--Нахожусь в Блоке 4--\n"\
-                                                  f"--LO_price={lo_price}--")
+                                                  f"--LO_price={metka}--")
                 while is_running:
-                    delta = int(r.check_market_price() - r.check_last_order_price())
+                    delta = int(r.check_market_price() - metka)
                     if delta > form['ints']['int_7']:
                         r.delete_all_orders()
                         r.create_order_7()
@@ -380,11 +379,10 @@ def handle_strategy_2(message):
                 time.sleep(sleep_time)
 
             else:
-                lo_price = r.check_last_order_price()
                 bot.send_message(message.chat.id, f"--Нахожусь в Блоке 4--\n"\
-                                                  f"--LO_price={lo_price}--")
+                                                  f"--LO_price={metka}--")
                 while is_running:
-                    delta = int(r.check_market_price() - r.check_last_order_price())
+                    delta = int(r.check_market_price() - metka)
                     if delta > form['ints']['int_7']:
                         r.delete_all_orders()
                         r.create_order_7()

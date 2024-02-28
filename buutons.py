@@ -5,6 +5,7 @@ import telebot
 from telebot import types
 import pandas as pd
 from tabulate import tabulate
+import datetime
 import time
 import yaml
 from robot import Robot
@@ -56,13 +57,12 @@ def proc_document(message):
                     attribs_ = ['time_period', 'symbol', 'isLeverage', 'min_value', 'values', 'ints', 'int_triggers', 'bybit', 'tg']
                     sorted_attribs = sorted(attribs_)
                     if sorted_inputed_attribs_ == sorted_attribs:
-                        import datetime
                         with open('form.yml', 'w') as file:
                             yaml.dump(yaml_data, file)
-                        with open('restart.txt','w') as file:
-                            file.write(f'форма изменена_{datetime.datetime.now()}')
                         bot.send_message(message.chat.id,   'Форма успешно загружена.\n'\
                                                             'Бот перезапущен с новыми параметрами.')
+                        with open('restart.txt','w') as file:
+                            file.write(f'форма изменена_{datetime.datetime.now()}')
                     else:
                         bot.send_message(message.chat.id,   'Ошибка.\n'\
                                                             'Неверный состав атрибутов.')                    

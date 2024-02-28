@@ -210,6 +210,8 @@ def handle_strategy_1(message):
                 lo_price = r.check_last_order_price()
                 bot.send_message(message.chat.id, f"--Нахожусь в Блоке 3--\n"\
                                                   f"--LO_price={lo_price}--")
+                r.delete_all_orders()
+                bot.send_message(message.chat.id, "Закрыл все ордера - delete open orders")
                 while is_running:
                     metka = None
                     delta = int(r.check_market_price() - r.check_last_order_price())
@@ -219,9 +221,8 @@ def handle_strategy_1(message):
                         r.create_order_1()
                         r.create_order_3() 
                         r.create_order_4()
-                        bot.send_message(message.chat.id,
-                                         text = f"Закрыл все ордера - delete open orders\n"\
-                                                f"delta={delta} --->\n"\
+                        bot.send_message(message.chat.id, 
+                                         text = f"delta={delta} --->\n"\
                                                 f"Выполнил order8 пок.\n"\
                                                 f"Выставил ордера 1-4") 
                         break
@@ -353,11 +354,12 @@ def handle_strategy_2(message):
                 lo_price = r.check_last_order_price()
                 bot.send_message(message.chat.id, f"--Нахожусь в Блоке 3--\n"\
                                                   f"--LO_price={lo_price}--")
+                r.delete_all_orders()
+                bot.send_message(message.chat.id, "Закрыл все ордера - delete open orders")
                 while is_running:
                     metka = None
                     delta = int(r.check_market_price() - r.check_last_order_price())
                     if delta > form['ints']['int_8']:
-                        r.delete_all_orders()
                         r.create_order_8()
                         r.create_order_1()
                         r.create_order_3() 

@@ -20,7 +20,7 @@ class Robot:
             )
     def create_order_11(self):
         btc_amnt = float(session.get_coin_balance(accountType="UNIFIED", coin="BTC")['result']['balance']['walletBalance'])
-        if btc_amnt >= form['min_value']:
+        if btc_amnt >= 1:
             session.place_order(
                 category = 'spot',
                 symbol=form['symbol'],

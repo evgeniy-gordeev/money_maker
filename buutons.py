@@ -213,9 +213,15 @@ def handle_strategy(message):
                         try:
                             metka = None
                             # r.delete_all_orders() - александр попросил закомментить
-                            r.create_order_5()                         
+                            r.create_order_5()
+                            try:
+                                price = session.get_open_orders(category = 'spot', symbol=form['symbol'])['result']['list'][0]['triggerPrice']
+                            except Exception:
+                                price = 'цена не определена'
+
                             bot.send_message(message.chat.id, f"delta={delta} и order5={order_5_is_active} --->\n"\
-                                                            f"Выставил order5 прод.") 
+                                                              f"Выставил order5 прод. {price}")
+                            del price 
                         except Exception:
                             bot.send_message(message.chat.id, "Ошибка. Перезапустите бота")
                         break

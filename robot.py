@@ -207,7 +207,6 @@ class Robot:
         trades_table['name'] = trades_table.apply(assign_order_name, axis =1)
         return trades_table
     def calculate_balance(self):
-        
         marketPrice = float(session.get_tickers(category="spot", symbol=form['symbol'])['result']['list'][0]['ask1Price'])
         token1_balance = float(session.get_coin_balance(accountType="UNIFIED",coin="USDC",)['result']['balance']['walletBalance'])
         token2_balance = float(session.get_coin_balance(accountType="UNIFIED",coin="BTC",)['result']['balance']['walletBalance'])

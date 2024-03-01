@@ -113,6 +113,7 @@ def handle_strategy(message):
                 else:
                     metka = None
                     bot.send_message(message.chat.id, f"delta={delta} ---> hold")
+                    time.sleep(sleep_time)
             time.sleep(sleep_time)
         if message.text == "Стратегия 2(market)":
             metka = None
@@ -123,8 +124,6 @@ def handle_strategy(message):
             bot.send_message(message.chat.id, f"Выполнил enter1 пок.\n"\
                                             f"Выставил ордера 1-4")
             time.sleep(sleep_time)
-        else:
-            bot.send_message(message.chat.id, "ОШИБКА!!!")
         
 
         #t2 - blocks2/3/4
@@ -136,17 +135,17 @@ def handle_strategy(message):
                 lo_price = r.check_last_order_price()
                 if side == 'Buy':
                     decision = 'Блок2'
-                    bot.send_message(message.chat.id, f"Last Order = {side} по {lo_price} --->\n"\
-                                                      f"Перехожу в {decision}")
+                    # bot.send_message(message.chat.id, f"Last Order = {side} по {lo_price} --->\n"\
+                    #                                   f"Перехожу в {decision}")
                 else:
                     decision = 'Блок3'
-                    bot.send_message(message.chat.id, f"Last Order = {side} по {lo_price} --->\n"\
-                                                      f"Перехожу в {decision}")
+                    # bot.send_message(message.chat.id, f"Last Order = {side} по {lo_price} --->\n"\
+                    #                                   f"Перехожу в {decision}")
             else:
                 side = 'metka'
                 decision = 'Блок4'
-                bot.send_message(message.chat.id, f"Last Order = {side} по {metka} --->\n"\
-                                                  f"Перехожу в {decision}") 
+                # bot.send_message(message.chat.id, f"Last Order = {side} по {metka} --->\n"\
+                #                                   f"Перехожу в {decision}") 
             
             if side == 'Buy':
                 #t2.1 - block2 intro
@@ -177,6 +176,7 @@ def handle_strategy(message):
                     else:
                         metka = None
                         bot.send_message(message.chat.id, f"delta={delta} и order5={order_5_is_active} ---> hold")
+                        time.sleep(sleep_time)
                 time.sleep(sleep_time)
 
             elif side == 'Sell':
@@ -211,6 +211,7 @@ def handle_strategy(message):
                     else:
                         metka = None
                         bot.send_message(message.chat.id, f"delta={delta} ---> hold")
+                        time.sleep(sleep_time)
                 time.sleep(sleep_time)
 
             else:
@@ -244,6 +245,7 @@ def handle_strategy(message):
                     else:
                         metka = None
                         bot.send_message(message.chat.id, f"delta={delta} ---> hold")
+                        time.sleep(sleep_time)
                 time.sleep(sleep_time)
 
 

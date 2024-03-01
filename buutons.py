@@ -161,17 +161,20 @@ def handle_strategy(message):
                 lo_price = r.check_last_order_price()
                 if side == 'Buy':
                     decision = 'Блок2'
-                    # bot.send_message(message.chat.id, f"Last Order = {side} по {lo_price} --->\n"\
-                    #                                   f"Перехожу в {decision}")
+                    bot.send_message(message.chat.id, f"Last Order = {side} по {lo_price} --->\n"\
+                                                      f"Перехожу в {decision}")
+                    time.sleep(sleep_time)
                 else:
                     decision = 'Блок3'
-                    # bot.send_message(message.chat.id, f"Last Order = {side} по {lo_price} --->\n"\
-                    #                                   f"Перехожу в {decision}")
+                    bot.send_message(message.chat.id, f"Last Order = {side} по {lo_price} --->\n"\
+                                                      f"Перехожу в {decision}")
+                    time.sleep(sleep_time)
             else:
                 side = 'metka'
                 decision = 'Блок4'
-                # bot.send_message(message.chat.id, f"Last Order = {side} по {metka} --->\n"\
-                #                                   f"Перехожу в {decision}") 
+                bot.send_message(message.chat.id, f"Last Order = {side} по {metka} --->\n"\
+                                                  f"Перехожу в {decision}") 
+                time.sleep(sleep_time)
             
             if side == 'Buy':
                 #t2.1 - block2 intro
@@ -186,6 +189,7 @@ def handle_strategy(message):
                 #_----
                 if profit <= max_profit - form['int_profit']:
                     is_running = False
+                    bot.send_message(message.chat.id, 'max-int_profit>profit')
                     delete_orders_and_balance(message)
                 else:
                     is_running = True   
@@ -230,12 +234,13 @@ def handle_strategy(message):
                 bot.send_message(message.chat.id, f"--Нахожусь в Блоке 3--\n"\
                                                 f"--LO_price={lo_price}--\n"\
                                                 f"--profit={profit} USDC, max={max_profit} USDC--\n"\
-                                                f"--Закрыл все ордера - delete open orders==")
+                                                f"--Закрыл все ордера-delete open orders--")
                 time.sleep(sleep_time)
 
                 #_----
                 if profit <= max_profit - form['int_profit']:
                     is_running = False
+                    bot.send_message(message.chat.id, 'max-int_profit>profit')
                     delete_orders_and_balance(message)
                 else:
                     is_running = True   
@@ -276,14 +281,13 @@ def handle_strategy(message):
                 bot.send_message(message.chat.id, f"--Нахожусь в Блоке 4--\n"\
                                                 f"--LO_price={metka}--\n"\
                                                 f"--profit={profit} USDC, max={max_profit} USDC--")
-                time.sleep(sleep_time)
-
-                #_----
                 if profit <= max_profit - form['int_profit']:
                     is_running = False
+                    bot.send_message(message.chat.id, 'max-int_profit>profit')
                     delete_orders_and_balance(message)
                 else:
                     is_running = True   
+                time.sleep(sleep_time)
 
                 #t4.2 - block4 action
                 while is_running:

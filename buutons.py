@@ -9,6 +9,8 @@ import datetime
 import time
 import yaml
 from robot import Robot
+from backend.form_chg import document_logic
+from backend.commands import menu_logic
 
 # Конфиги
 form = yaml.safe_load(open('form.yml', 'r'))
@@ -26,88 +28,26 @@ is_running = False
 # Обработчики
 @bot.message_handler(commands=['start'])
 def handle_start(message):
-    bot.send_message(message.chat.id, text = f"Приветствую Вас!\n"\
-                                             f"В меню слева доступны команды\n"\
-                                             f'"Смена Формы" и "Запуск Стратегии"')
-
-
+    response =  f"Приветствую Вас!\n"\
+                f"В меню слева доступны команды\n"\
+                f'"Смена Формы" и "Запуск Стратегии"'
+    bot.send_message(message.chat.id, response)
 
 @bot.message_handler(commands=['chg_form'])
 def form_chg(message):
     bot.send_message(message.chat.id, 
-                     text = f"Пожалуйста, подгрузите форму в формате form.yml\n"
+                     text = f"Пожалуйста, подгрузите form.yml\n"
                             f"По умолчанию используется форма разработчика.\n"
-                            f"Пропустите шаг, если изменения не требуются."
+                            f"Пропустите шаг, если изменения не требуются.\n"
                             f"Не нужно писать комментарии к форме.")
-
-@bot.message_handler(content_types=['document'])
-def proc_document(message):
-    try:
-        document_id = message.document.file_id
-        document_path = bot.get_file(document_id).file_path
-        document_name = message.document.file_name
-        if document_name == 'form.yml':
-            document_content = bot.download_file(document_path)
-            document_content_decoded = document_content.decode('unicode_escape')
-            if len(document_content_decoded) > 0:            
-                yaml_data = yaml.safe_load(document_content_decoded)
-                if isinstance(yaml_data, dict):
-                    inputed_attribs_ = list(yaml_data.keys())
-                    sorted_inputed_attribs_ = sorted(inputed_attribs_)
-                    attribs_ = [
-                        'time_period', 'symbol', 'isLeverage', 'min_value', 'int_profit',
-                        'values', 'ints', 'int_triggers', 'bybit', 'tg']
-                    sorted_attribs = sorted(attribs_)
-                    if sorted_inputed_attribs_ == sorted_attribs:
-                        with open('form.yml', 'w') as file:
-                            yaml.dump(yaml_data, file)
-                        bot.send_message(message.chat.id,   'Форма успешно загружена.\n'\
-                                                            'Бот перезапущен с новыми параметрами.')
-                        with open('restart.txt','w') as file:
-                            file.write(f'форма изменена_{datetime.datetime.now()}')
-                    else:
-                        bot.send_message(message.chat.id,   'Ошибка.\n'\
-                                                            'Неверный состав атрибутов.')                    
-                else:
-                    bot.send_message(message.chat.id,   'Ошибка.\n'\
-                                                        'Отсутствуют атрибуты.') 
-
-            else:
-                bot.send_message(message.chat.id,   'Ошибка.\n'\
-                                                    'Пустой документ.')
-        else:
-            bot.send_message(message.chat.id,   'Ошибка.\n'\
-                                                'Некорректное название и расширение файла.\n'
-                                                'Загрузите файл "form.yml"')
-    except Exception:
-            bot.send_message(message.chat.id,   'Ошибка.\n'\
-                                                'Комментарии на русском после # в форме\n'
-                                                'Уберите русский яз. и символ # из формы')
-
 
 @bot.message_handler(commands=['strategy'])
 def handle_strat(message):
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-    itembtn_str1 = types.KeyboardButton('Стратегия 1(int_0)')
-    itembtn_str2 = types.KeyboardButton('Стратегия 2(market)')
-    itembtn_buy_val1 = types.KeyboardButton('Купить value_1')
-    itembtn_sell_val1 = types.KeyboardButton('Продать value_1')
-    itembtn_balance = types.KeyboardButton('Баланс')
-    itembtn_intervals = types.KeyboardButton('Интервалы')
-    itembtn_orders = types.KeyboardButton('Текущие Ордера')
-    itembtn_trades = types.KeyboardButton('Last Trades')
-    itembtn_stop = types.KeyboardButton('STOP')
-    itembtn_vkl = types.KeyboardButton('ВКЛ СЧЕТЧИК')
-    itembtn_vikl = types.KeyboardButton('ВЫКЛ СЧЕТЧИК')
-    markup.add(
-        itembtn_str1, itembtn_str2, 
-        itembtn_buy_val1, itembtn_sell_val1,
-        itembtn_balance, itembtn_intervals, 
-        itembtn_orders, itembtn_trades, 
-        itembtn_vkl, itembtn_vikl,
-        itembtn_stop,        
-        )
-    bot.send_message(message.chat.id, text = "Пожалуйста, выберите статегию.", reply_markup=markup)
+    menu_logic(message)
+
+@bot.message_handler(content_types=['document'])
+def proc_document(message):
+    document_logic(message)
 
 
 @bot.message_handler(func=lambda message: message.text == "Стратегия 1(int_0)")

@@ -29,12 +29,11 @@ def delete_orders_and_balance(message):
     r.delete_all_orders()
     try:
         r.create_order_11()
-        token1_balance, token2_balance, total_balance = r.calculate_balance()
-        bot.send_message(message.chat.id, 
-                         text = f"--Робот удален. Все btc проданы.--\n"\
-                                f"--Общий баланс: {total_balance:.7f} USDC--")
+        response =  f"--Робот удален. Все btc проданы.--\n"\
+                    f"--Общий баланс: {r.calculate_total_balance():.7f} USDC--"
+        bot.send_message(message.chat.id, response)
     except InvalidRequestError:
-        response =  f"Не могу продать btc, не хватает баланса\n."\
+        response =  f"Не могу продать btc, не хватает баланса.\n"\
                     f"Обратить внимание." 
         bot.send_message(message.chat.id, response)   
 
@@ -418,10 +417,9 @@ def handle_stop(message):
     r.delete_all_orders()
     try:
         r.create_order_11()
-        token1_balance, token2_balance, total_balance = r.calculate_balance()
-        bot.send_message(message.chat.id, 
-                         text = f"--Робот удален. Все btc проданы.--\n"\
-                                f"--Общий баланс: {total_balance:.7f} USDC--")
+        response =  f"--Робот удален. Все btc проданы.--\n"\
+                    f"--Общий баланс: {r.calculate_total_balance():.7f} USDC--"
+        bot.send_message(message.chat.id, response)
     except InvalidRequestError:
         response =  f"Не могу продать btc, не хватает баланса\n."\
                     f"Обратить внимание." 

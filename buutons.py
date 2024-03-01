@@ -77,10 +77,12 @@ def handle_strategy(message):
         #t0.2 - block0(подготовка)
         r.delete_all_orders()
         r.create_order_11()
+        order_price_11 = r.check_last_order_price()
         r.create_order_9()
+        order_price_9 = r.check_last_order_price()
         response = f"Закрыл все ордера - delete open orders.\n" \
-                   f"Выполнил order_11 прод. - продал все btc.\n" \
-                   f"Выполнил order_9 пок. - закупил резерв.\n" 
+                   f"Выполнил order_11 прод. {order_price_11} - продал все btc.\n" \
+                   f"Выполнил order_9 пок. {order_price_9} - закупил резерв.\n" 
         bot.send_message(message.chat.id, response)   
         time.sleep(sleep_time)
 
@@ -98,11 +100,12 @@ def handle_strategy(message):
                 if delta > form['ints']['int_0']:
                     metka = None
                     r.create_order_enter_2()
+                    order_price = r.check_last_order_price()
                     r.create_order_1()
                     r.create_order_3() 
                     r.create_order_4()                        
                     bot.send_message(message.chat.id, f"delta={delta} ---> \n"\
-                                                    f"Выполнил enter2 пок\n"\
+                                                    f"Выполнил enter2 пок {order_price}\n"\
                                                     f"Выставил ордера 1-4")
                     break
                 elif delta < -form['ints']['int_9']:
@@ -118,10 +121,11 @@ def handle_strategy(message):
         if message.text == "Стратегия 2(market)":
             metka = None
             r.create_order_enter_1()
+            order_price = r.check_last_order_price()
             r.create_order_1()
             r.create_order_3()
             r.create_order_4()
-            bot.send_message(message.chat.id, f"Выполнил enter1 пок.\n"\
+            bot.send_message(message.chat.id, f"Выполнил enter1 пок. {order_price}\n"\
                                             f"Выставил ордера 1-4")
             time.sleep(sleep_time)
         
@@ -195,12 +199,13 @@ def handle_strategy(message):
                         metka = None
                         r.delete_all_orders()
                         r.create_order_8()
+                        order_price = r.check_last_order_price()
                         r.create_order_1()
                         r.create_order_3() 
                         r.create_order_4()
                         bot.send_message(message.chat.id, 
                                          text = f"delta={delta} --->\n"\
-                                                f"Выполнил order8 пок.\n"\
+                                                f"Выполнил order8 пок. {order_price}\n"\
                                                 f"Выставил ордера 1-4") 
                         break
                     elif delta < -form['ints']['int_9']:
@@ -227,13 +232,14 @@ def handle_strategy(message):
                         metka = None
                         r.delete_all_orders()
                         r.create_order_7()
+                        order_price = r.check_last_order_price()
                         r.create_order_1()
                         r.create_order_3() 
                         r.create_order_4()                        
                         bot.send_message(message.chat.id,
                                          text = f"Закрыл все ордера - delete open orders\n"\
                                                 f"delta={delta} --->\n"\
-                                                f"Выполнил order7 пок.\n"\
+                                                f"Выполнил order7 пок. {order_price}\n"\
                                                 f"Выставил ордера 1-4\n"\
                                                 f"Обнулил значение метки")                        
                         break

@@ -69,8 +69,9 @@ def handle_strategy(message):
         
         #t0.1 - block0(подготовка)
         enter_balance = r.calculate_total_balance()
+        max_profit = None
         response =  f"--Подготовка--\n"\
-                    f"--Начальный баланс {enter_balance}"
+                    f"--Начальный баланс {enter_balance} USDC"
         bot.send_message(message.chat.id, response)
         time.sleep(sleep_time)
 
@@ -88,9 +89,13 @@ def handle_strategy(message):
 
         
         #t1.1 - block1 intro
+        profit = round(r.calculate_total_balance() - enter_balance, 3)
+        max_profit = round(profit, 3)
+        #УСЛОВИЕ
         lo_price = r.check_last_order_price()
         bot.send_message(message.chat.id, f"--Нахожусь в Блоке 1--\n"\
-                                          f"--LO_price={lo_price}--")
+                                          f"--LO_price={lo_price}--]n"\
+                                          f"--profit={profit}, max={max_profit}--")
         time.sleep(sleep_time)
     
         #t1.2 - block1 action
@@ -153,9 +158,12 @@ def handle_strategy(message):
             
             if side == 'Buy':
                 #t2.1 - block2 intro
+                profit = round(r.calculate_total_balance() - enter_balance, 3)
+                max_profit = profit if profit >= max_profit else max_profit                
                 lo_price = r.check_last_order_price()
                 bot.send_message(message.chat.id, f"--Нахожусь в Блоке 2--\n"\
-                                                  f"--LO_price={lo_price}--")  
+                                                f"--LO_price={lo_price}--]n"\
+                                                f"--profit={profit}, max={max_profit}--")
                 time.sleep(sleep_time)
 
                 #t2.2 - block2 action
@@ -185,9 +193,12 @@ def handle_strategy(message):
 
             elif side == 'Sell':
                 #t3.1 - block3 intro
+                profit = round(r.calculate_total_balance() - enter_balance, 3)
+                max_profit = profit if profit >= max_profit else max_profit                
                 lo_price = r.check_last_order_price()
                 bot.send_message(message.chat.id, f"--Нахожусь в Блоке 3--\n"\
-                                                  f"--LO_price={lo_price}--")
+                                                f"--LO_price={lo_price}--]n"\
+                                                f"--profit={profit}, max={max_profit}--")
                 r.delete_all_orders()
                 bot.send_message(message.chat.id, "Закрыл все ордера - delete open orders")
                 time.sleep(sleep_time)
@@ -221,8 +232,11 @@ def handle_strategy(message):
 
             else:
                 #t4.1 - block4 intro
+                profit = round(r.calculate_total_balance() - enter_balance, 3)
+                max_profit = profit if profit >= max_profit else max_profit                
                 bot.send_message(message.chat.id, f"--Нахожусь в Блоке 4--\n"\
-                                                  f"--LO_price={metka}--")
+                                                f"--LO_price={metka}--]n"\
+                                                f"--profit={profit}, max={max_profit}--")
                 time.sleep(sleep_time)
 
                 #t4.2 - block4 action

@@ -1,6 +1,7 @@
 bybit:
   api_key: 5wH56z5gvRFfoNKVd6
   api_secret: N4n1P6PG3E9mwhwysF4fSQPpBR2ZACOkdmA9
+int_profit: 0.001
 int_triggers:
   int_trigger1: 5
   int_trigger2: 10

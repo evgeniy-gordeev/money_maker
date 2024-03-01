@@ -54,7 +54,9 @@ def proc_document(message):
                 if isinstance(yaml_data, dict):
                     inputed_attribs_ = list(yaml_data.keys())
                     sorted_inputed_attribs_ = sorted(inputed_attribs_)
-                    attribs_ = ['time_period', 'symbol', 'isLeverage', 'min_value', 'values', 'ints', 'int_triggers', 'bybit', 'tg']
+                    attribs_ = [
+                        'time_period', 'symbol', 'isLeverage', 'min_value', 'int_profit',
+                        'values', 'ints', 'int_triggers', 'bybit', 'tg']
                     sorted_attribs = sorted(attribs_)
                     if sorted_inputed_attribs_ == sorted_attribs:
                         with open('form.yml', 'w') as file:

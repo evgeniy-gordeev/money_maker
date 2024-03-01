@@ -213,6 +213,21 @@ class Robot:
         token2_balance = float(session.get_coin_balance(accountType="UNIFIED",coin="BTC",)['result']['balance']['walletBalance'])
         total_balance = token1_balance + marketPrice * token2_balance
         return token1_balance, token2_balance, total_balance
+    def calculate_total_balance(self):
+        marketPrice = float(session.get_tickers(category="spot", symbol=form['symbol'])['result']['list'][0]['ask1Price'])
+        token1_balance = float(session.get_coin_balance(accountType="UNIFIED",coin="USDC",)['result']['balance']['walletBalance'])
+        token2_balance = float(session.get_coin_balance(accountType="UNIFIED",coin="BTC",)['result']['balance']['walletBalance'])
+        total_balance = token1_balance + marketPrice * token2_balance
+        return total_balance 
+    def calculate_profit_max_profit(self, enter_balance, profit_list):
+        marketPrice = float(session.get_tickers(category="spot", symbol=form['symbol'])['result']['list'][0]['ask1Price'])
+        token1_balance = float(session.get_coin_balance(accountType="UNIFIED",coin="USDC",)['result']['balance']['walletBalance'])
+        token2_balance = float(session.get_coin_balance(accountType="UNIFIED",coin="BTC",)['result']['balance']['walletBalance'])
+        total_balance = token1_balance + marketPrice * token2_balance
+        profit = round(total_balance-enter_balance,3)
+        profit_list.append(profit)
+        max_profit = round(max(profit_list),3)
+        return profit, max_profit
 
     def calc_open_orders_id(self):
         bbt_req = session.get_open_orders(category = 'spot', symbol=form['symbol'])

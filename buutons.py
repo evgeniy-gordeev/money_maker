@@ -24,12 +24,6 @@ r = Robot()
 sleep_time = form['time_period'] #счетчик
 is_running = False
 
-def check_order5_active():
-    try:
-        order_5_is_active = r.check_orders()['name'].str.contains('order5').any()
-    except Exception:
-        order_5_is_active = False
-    return order_5_is_active
 
 def delete_orders_and_balance(message):
     r.delete_all_orders()
@@ -55,11 +49,11 @@ def handle_start(message):
 
 @bot.message_handler(commands=['chg_form'])
 def form_chg(message):
-    bot.send_message(message.chat.id, 
-                     text = f"Пожалуйста, подгрузите form.yml\n"
-                            f"По умолчанию используется форма разработчика.\n"
-                            f"Пропустите шаг, если изменения не требуются.\n"
-                            f"Не нужно писать комментарии к форме.")
+    response =  f"Пожалуйста, подгрузите form.yml\n"\
+                f"По умолчанию используется форма разработчика.\n"\
+                f"Пропустите шаг, если изменения не требуются.\n"\
+                f"Не нужно писать комментарии к форме."
+    bot.send_message(message.chat.id, response)
 
 @bot.message_handler(commands=['strategy'])
 def handle_strat(message):
@@ -197,7 +191,7 @@ def handle_strategy(message):
                 #t2.2 - block2 action
                 while is_running:
                     delta = int(r.check_market_price() - r.check_last_order_price())
-                    order_5_is_active = check_order5_active()
+                    order_5_is_active = r.check_order5_active()
                     if delta < 0:
                         try:
                             metka = None

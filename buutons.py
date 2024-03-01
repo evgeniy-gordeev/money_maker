@@ -31,6 +31,20 @@ def check_order5_active():
         order_5_is_active = False
     return order_5_is_active
 
+def delete_orders_and_balance(message):
+    r.delete_all_orders()
+    try:
+        r.create_order_11()
+        token1_balance, token2_balance, total_balance = r.calculate_balance()
+        bot.send_message(message.chat.id, 
+                         text = f"--Робот удален. Все btc проданы.--\n"\
+                                f"--Общий баланс: {total_balance:.7f} USDC--")
+    except InvalidRequestError:
+        response =  f"Не могу продать btc, не хватает баланса\n."\
+                    f"Обратить внимание." 
+        bot.send_message(message.chat.id, response)   
+
+
 # Обработчики
 @bot.message_handler(commands=['start'])
 def handle_start(message):
@@ -169,6 +183,13 @@ def handle_strategy(message):
                                                 f"--profit={profit} USDC, max={max_profit} USDC--")
                 time.sleep(sleep_time)
 
+                #_----
+                if profit <= max_profit - form['int_profit']:
+                    is_running = False
+                    delete_orders_and_balance(message)
+                else:
+                    is_running = True   
+                
                 #t2.2 - block2 action
                 while is_running:
                     delta = int(r.check_market_price() - r.check_last_order_price())
@@ -205,12 +226,19 @@ def handle_strategy(message):
                 profit = round(r.calculate_total_balance() - enter_balance, 3)
                 max_profit = profit if profit >= max_profit else max_profit                
                 lo_price = r.check_last_order_price()
+                r.delete_all_orders()
                 bot.send_message(message.chat.id, f"--Нахожусь в Блоке 3--\n"\
                                                 f"--LO_price={lo_price}--\n"\
-                                                f"--profit={profit} USDC, max={max_profit} USDC--")
-                r.delete_all_orders()
-                bot.send_message(message.chat.id, "Закрыл все ордера - delete open orders")
+                                                f"--profit={profit} USDC, max={max_profit} USDC--\n"\
+                                                f"--Закрыл все ордера - delete open orders==")
                 time.sleep(sleep_time)
+
+                #_----
+                if profit <= max_profit - form['int_profit']:
+                    is_running = False
+                    delete_orders_and_balance(message)
+                else:
+                    is_running = True   
 
                 #t3.2 - block3 action
                 while is_running:                    
@@ -249,6 +277,13 @@ def handle_strategy(message):
                                                 f"--LO_price={metka}--\n"\
                                                 f"--profit={profit} USDC, max={max_profit} USDC--")
                 time.sleep(sleep_time)
+
+                #_----
+                if profit <= max_profit - form['int_profit']:
+                    is_running = False
+                    delete_orders_and_balance(message)
+                else:
+                    is_running = True   
 
                 #t4.2 - block4 action
                 while is_running:
@@ -386,7 +421,7 @@ def handle_stop(message):
     except InvalidRequestError:
         response =  f"Не могу продать btc, не хватает баланса\n."\
                     f"Обратить внимание." 
-        bot.send_message(message.chat.id, response)   
+        bot.send_message(message.chat.id, response)  
 
 # Запуск бота
 while True:
